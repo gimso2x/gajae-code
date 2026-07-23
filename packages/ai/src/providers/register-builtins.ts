@@ -178,18 +178,6 @@ interface LazyStreamLimits {
 	defaultIdleTimeoutMs?: number;
 }
 
-/**
- * Cloud Code Assist (google-gemini-cli / google-antigravity) routinely takes
- * longer than the global 100s default to emit its first SSE event when serving
- * the heavier Gemini 3.x Pro tiers at high thinking levels. Bump the first-event
- * floor to five minutes so duke et al. stop seeing spurious "stream timed out
- * while waiting for the first event" aborts on legitimate cold reasoning starts.
- * The steady-state idle watchdog stays on the global default since the upstream
- * emits thinking tokens frequently once it gets going.
- */
-const GOOGLE_GEMINI_CLI_LAZY_STREAM_LIMITS: LazyStreamLimits = {
-	defaultFirstEventTimeoutMs: 300_000,
-};
 
 function forwardStream<TApi extends Api>(
 	target: EventStreamImpl,
@@ -398,10 +386,7 @@ function loadBedrockProviderModule(): Promise<LazyProviderModule<"bedrock-conver
 export const streamAnthropic = createLazyStream(loadAnthropicProviderModule);
 export const streamAzureOpenAIResponses = createLazyStream(loadAzureOpenAIResponsesProviderModule);
 export const streamGoogle = createLazyStream(loadGoogleProviderModule);
-export const streamGoogleGeminiCli = createLazyStream(
-	loadGoogleGeminiCliProviderModule,
-	GOOGLE_GEMINI_CLI_LAZY_STREAM_LIMITS,
-);
+export const streamGoogleGeminiCli = createLazyStream(loadGoogleGeminiCliProviderModule);
 export const streamGoogleVertex = createLazyStream(loadGoogleVertexProviderModule);
 export const streamOpenAICodexResponses = createLazyStream(loadOpenAICodexResponsesProviderModule);
 export const streamOpenAICompletions = createLazyStream(loadOpenAICompletionsProviderModule);
