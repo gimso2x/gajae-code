@@ -5471,6 +5471,9 @@ export class TelegramNotificationDaemon {
 						...(threadId !== undefined ? { message_thread_id: threadId } : {}),
 						text: chunks[i]!,
 						parse_mode: TELEGRAM_PARSE_MODE,
+						...(telegramDisableNotification(this.opts.sound, "finalized") === true
+							? { disable_notification: true }
+							: {}),
 						...(i === chunks.length - 1 ? { reply_markup: { inline_keyboard } } : {}),
 					})
 					.catch(() => undefined);
